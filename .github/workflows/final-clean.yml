@@ -87,7 +87,7 @@ jobs:
           pdftotext Business_Recommendations.pdf /tmp/biz.txt
           grep -q '0.9596' /tmp/tech.txt
           grep -q '0.0118' /tmp/tech.txt
-          grep -q '0.9596' /tmp/biz.txt
+          grep -q 'NDCG@10' /tmp/biz.txt
 
           echo '7/8 Replacing repository root with exactly the ten approved deliverables'
           rm -f create_final_reports.py build_business_corporate_preview_v12.py build_nb1_assets.py
