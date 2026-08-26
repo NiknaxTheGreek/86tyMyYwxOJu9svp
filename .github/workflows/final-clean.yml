@@ -23,7 +23,7 @@ jobs:
           set -euo pipefail
 
           echo '1/8 Reconstructing canonical project source package'
-          cat .package/chunk_* > /tmp/source.b64
+          cat .package/chunk_000 .package/gap_000 .package/gap_001 .package/gap_002 .package/chunk_001 .package/tail_000 .package/tail_001 .package/tail_002 .package/tail_003 .package/tail_004 > /tmp/source.b64
           base64 -d /tmp/source.b64 > /tmp/source.tar.xz
           mkdir -p /tmp/source
           xz -dc /tmp/source.tar.xz | tar -xf - -C /tmp/source
@@ -129,15 +129,7 @@ jobs:
           git commit -m 'Finalize Human Resources Candidate Ranking repository'
           git push origin HEAD:main
 
-          echo '8/8 Removing all temporary/test branches'
-          for branch in \
-            test-content-path test-file-param test-localpath test-localpath2 test-localpath3 test-localpath4 test-path-content \
-            upload-final upload-final-2 upload-final-temp upload-final-temp2 upload-final-temp3 upload-final-temp4 \
-            upload-final-temp5 upload-final-temp6 upload-final-temp7 upload-final-temp8 upload-final-temp9 upload-final-temp10
-          do
-            git push origin --delete "$branch" || true
-          done
-
+          echo '8/8 Verifying the repository has only main'
           heads="$(git ls-remote --heads origin | awk '{print $2}' | sed 's#refs/heads/##' | sort)"
           echo "Remote branches after cleanup:"
           echo "$heads"
