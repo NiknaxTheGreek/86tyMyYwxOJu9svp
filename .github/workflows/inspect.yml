@@ -1,0 +1,39 @@
+name: Inspect staged upload
+
+on:
+  push:
+    paths:
+      - INSPECT_NOW
+
+permissions:
+  contents: read
+
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Inspect staged payloads
+        shell: bash
+        run: |
+          set -x
+          wc -c .stage/* .upload/* || true
+          for f in .stage/notebooks.b64; do
+            base64 -d "$f" > /tmp/payload 2>/tmp/b64err || true
+            file /tmp/payload || true
+            wc -c /tmp/payload || true
+            xz -dc /tmp/payload > /tmp/unpacked 2>/tmp/xzerr || true
+            file /tmp/unpacked || true
+            wc -c /tmp/unpacked || true
+            tar -tvf /tmp/unpacked 2>/tmp/tarerr || true
+            cat /tmp/b64err /tmp/xzerr /tmp/tarerr || true
+          done
+          cat .stage/reports_* > /tmp/reports.b64 || true
+          base64 -d /tmp/reports.b64 > /tmp/reports.payload 2>/tmp/rb64err || true
+          file /tmp/reports.payload || true
+          wc -c /tmp/reports.payload || true
+          xz -dc /tmp/reports.payload > /tmp/reports.unpacked 2>/tmp/rxzerr || true
+          file /tmp/reports.unpacked || true
+          wc -c /tmp/reports.unpacked || true
+          tar -tvf /tmp/reports.unpacked 2>/tmp/rtarerr || true
+          cat /tmp/rb64err /tmp/rxzerr /tmp/rtarerr || true
