@@ -1,0 +1,9 @@
+.ipynb_checkpoints/
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+.DS_Store
+GoogleNews-vectors-negative300.bin
+GoogleNews-vectors-negative300.bin.gz
+gensim-data/
