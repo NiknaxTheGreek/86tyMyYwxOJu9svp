@@ -59,15 +59,6 @@ Because intent is multiplied by occupational relevance, generic phrases such as 
 | Seeking Human Resources | **0.826** |
 | Mean | **0.892** |
 
-```mermaid
-flowchart LR
-    A["Aspiring HR
-NDCG@10 = 0.957"] --> M["Mean
-0.892"]
-    S["Seeking HR
-NDCG@10 = 0.826"] --> M
-```
-
 Word2Vec reproduced the rule-based ordering very strongly for the aspiring-HR query but less consistently for the seeking-HR query. The main disagreements were interpretable. ID 75, an employer advertisement stating that a staffing company was *seeking Human Resources professionals*, ranked highly because Word2Vec recognized the relevant words but could not determine **who was seeking whom**. ID 92, which was seeking employment in Customer Service or Patient Care, also entered the Word2Vec top ten because *seeking* increased semantic similarity despite the absence of HR relevance. Longer titles also showed evidence of **mean-pooling dilution**, where highly relevant HR terms could be weakened by unrelated words receiving equal weight.
 
 ## Independent Human Relevance Assessment
@@ -95,7 +86,7 @@ Most disagreements occurred between neighboring relevance levels rather than bet
 
 When a recruiter stars a candidate as an ideal example, the original Word2Vec search representation is shifted toward that candidate's job-title vector:
 
-$$q_2 = \operatorname{normalize}(0.70q + 0.30d_\star)$$
+$$q_2 = \frac{0.70q + 0.30d_\star}{\lVert 0.70q + 0.30d_\star \rVert}$$
 
 The mechanism was tested across **34 unique ideal-title/query scenarios**. Title/query combinations with rule-based relevance scores of **0.85 to 1.00** were treated as strong matches, and each was starred one at a time before **all 52 unique titles were reranked**.
 
@@ -107,21 +98,6 @@ The mechanism was tested across **34 unique ideal-title/query scenarios**. Title
 | 40% | 1 | 8/10 |
 | 50% | 1 | 7/10 |
 
-```mermaid
-flowchart LR
-    W10["10%
-Star rank 7
-9/10 retained"] --> W20["20%
-Star rank 5
-9/10 retained"] --> W30["30% SELECTED
-Star rank 2
-9/10 retained"] --> W40["40%
-Star rank 1
-8/10 retained"] --> W50["50%
-Star rank 1
-7/10 retained"]
-```
-
 A **30% feedback weight** provided the best balance between personalization and ranking stability: the updated query retains 70% of the original recruiter search and incorporates 30% of the starred candidate representation.
 
 Two representative examples show the effect:
@@ -130,13 +106,6 @@ Two representative examples show the effect:
 |---|---|---:|---:|---:|
 | Aspiring HR | ID 3 - *Aspiring Human Resources Professional* | **4 -> 1** | 9/10 | 0.957 -> **0.959** |
 | Seeking HR | ID 99 - *Seeking Human Resources Position* | **8 -> 1** | 8/10 | 0.826 -> **0.904** |
-
-```mermaid
-flowchart LR
-    A["Before starring"] --> B["ID 99: #8"] --> C["After starring: #1"]
-    A --> D["ID 100: #15"] --> E["After starring: #9"]
-    A --> F["ID 92: #10"] --> G["After starring: #15"]
-```
 
 For the **seeking** query, ID 100, which explicitly seeks an entry-level Human Resources position, moved from **rank 15 to rank 9**, while ID 92, which seeks work in Customer Service or Patient Care rather than HR, fell from **rank 10 to rank 15**. Recruiter feedback therefore changes more than the starred candidate itself; it also reorganizes semantically similar and dissimilar candidates around it.
 
@@ -159,7 +128,7 @@ Automation can reduce some sources of inconsistency by applying the same relevan
 
 ## Project Structure
 
-The final project contains **exactly 10 files**: the original candidate dataset, a 52-title manually labelled dataset used only for independent human-relevance validation, three executed notebooks covering rule-based ranking, Word2Vec ranking, and recruiter-feedback reranking, the README, a Technical Report, a Business Recommendations report, `requirements.txt`, and `.gitignore`. The three README visuals are self-contained Mermaid diagrams, so no extra figure files or folders are required.
+The final project contains **exactly 10 files**: the original candidate dataset, a 52-title manually labelled dataset used only for independent human-relevance validation, three executed notebooks covering rule-based ranking, Word2Vec ranking, and recruiter-feedback reranking, the README, a Technical Report, a Business Recommendations report, `requirements.txt`, and `.gitignore`.
 
 ```text
 project/
